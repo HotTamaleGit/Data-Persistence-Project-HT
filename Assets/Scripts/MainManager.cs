@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class MainManager : MonoBehaviour
 {
@@ -12,16 +13,23 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
+    public GameObject exitButton;
     
     private bool m_Started = false;
-    private int m_Points;
+    public static int m_Points;
     
     private bool m_GameOver = false;
 
-    
+    public string playerName;
+
+    public MenuUIHandler handler;
+
+
     // Start is called before the first frame update
     void Start()
     {
+        playerName = GameManager.Instance.playerName;
+        ScoreText.text = $"{playerName}'s Score : 0";
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -65,12 +73,19 @@ public class MainManager : MonoBehaviour
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = $"{playerName}'s Score : {m_Points}";
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        exitButton.SetActive(true);
+        if (m_Points > GameManager.Instance.highScore)
+        {
+            GameManager.Instance.newHigh = m_Points;
+            handler.GameOverUpdate();
+            //MenuUIHandler.scoreBoard.text = $"Best Score: {GameManager.Instance.playerName}: {GameManager.Instance.newHigh}";
+        }
     }
 }
